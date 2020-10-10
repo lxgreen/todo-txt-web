@@ -4,15 +4,16 @@
   "private": true,
   "scripts": {
     "test": "lerna run test --stream",
-    "start": "yarn --cwd ./packages/client start",
+    "start": "concurrently \"yarn --cwd ./packages/client start\" \"yarn --cwd ./packages/server start\"",
     "build": "lerna run build --stream",
     "clean": "lerna clean --yes && rm -rf node_modules && rm -f yarn.lock",
     "rebuild": "yarn clean && yarn && yarn build"
   },
   "devDependencies": {
+    "concurrently": "^5.3.0",
     "lerna": "^3.22.1"
   },
   "workspaces": [
-     "packages/*"
+    "packages/*"
   ]
 }
