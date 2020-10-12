@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "postinstall": "touch todo.txt",
-    "start": "PORT=3001 node ./bin/www",
+    "start": "TODO=todo.txt PORT=3001 node ./bin/www",
+    "start:dev": "TODO=todo.txt PORT=3001 nodemon ./bin/www",
     "test": "jest"
   },
   "dependencies": {
