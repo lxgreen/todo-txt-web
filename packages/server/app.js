@@ -1,4 +1,4 @@
-const todotxt = require("todotxt");
+const { parse } = require("./data-convertor");
 const { readFileSync } = require("fs");
 var createError = require("http-errors");
 var express = require("express");
@@ -23,13 +23,16 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 
-const todoFilePath = path.resolve(process.cwd(), process.env.TODO);
+const todoFilePath =
+  process.env.NODE_ENV === "test"
+    ? "todo.txt"
+    : path.resolve(__dirname, process.env.TODO);
 const txt = readFileSync(todoFilePath);
 // if (err) {
 //   console.error('invalid todo.txt');
 //   process.exit(1);
 // }
-const tasks = todotxt.parse(txt);
+const tasks = parse(txt);
 app.use("/tasks", taskRouter(tasks));
 
 // catch 404 and forward to error handler

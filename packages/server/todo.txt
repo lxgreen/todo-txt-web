@@ -1,0 +1,13 @@
+x 2020-10-13 2020-10-10 test complete task route /tasks/x due:2020-10-20
+2020-10-16 test incomplete task route /tasks/!x
+
+(A) test A priority task route /tasks/A
+x (B) test B priority complete task route /tasks/B/x
+
+test @api context tasks route /tasks/@api
+test @api or @e2e context tasks route /tasks/@api,e2e
+x 2020-10-13 test @api or @e2e context complete tasks route /tasks/@api,e2e/x
+
+test +server project tasks route /tasks/+server
+test +server or +client project tasks route /tasks/+server,client
+(C) test +server or +client project C-priority tasks route /tasks/+server,client/C
