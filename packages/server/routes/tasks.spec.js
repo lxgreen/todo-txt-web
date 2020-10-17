@@ -16,11 +16,10 @@ test +server or +client project tasks route /tasks/+server,client
 (Z) test +server or +client project Z-priority tasks route /tasks/+server,client/Z
 */
 
-const testCases = [
+const testGetCases = [
   {
     title: "get /task/1 returns task by number: 1",
     route: "/tasks/1",
-    method: "get",
     testedElement: 0,
     expected: {
       number: 1,
@@ -29,7 +28,6 @@ const testCases = [
   {
     title: "get /tasks returns all tasks",
     route: "/tasks",
-    method: "get",
     testedElement: 9,
     expected: {
       complete: false,
@@ -40,7 +38,6 @@ const testCases = [
   {
     title: "get /tasks/x returns all complete tasks",
     route: "/tasks/x",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: true,
@@ -50,7 +47,6 @@ const testCases = [
   {
     title: "get /tasks/!x returns all incomplete tasks",
     route: "/tasks/!x",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: false,
@@ -60,7 +56,6 @@ const testCases = [
   {
     title: "get /tasks/A returns all A-priority tasks",
     route: "/tasks/A",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: false,
@@ -71,7 +66,6 @@ const testCases = [
   {
     title: "get /tasks/B/x returns all B-priority complete tasks",
     route: "/tasks/B/x",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: true,
@@ -82,7 +76,6 @@ const testCases = [
   {
     title: "get /tasks/@api returns all @api context tasks",
     route: "/tasks/@api",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: false,
@@ -92,7 +85,6 @@ const testCases = [
   {
     title: "get /tasks/@api,e2e returns all @api or @e2e context tasks",
     route: "/tasks/@api,e2e",
-    method: "get",
     testedElement: 1,
     expected: {
       complete: false,
@@ -103,7 +95,6 @@ const testCases = [
     title:
       "get /tasks/@api,e2e/x returns all @api or @e2e context complete tasks",
     route: "/tasks/@api,e2e/x",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: true,
@@ -113,7 +104,6 @@ const testCases = [
   {
     title: "get /tasks/+server returns all tasks in server project",
     route: "/tasks/+server",
-    method: "get",
     testedElement: 0,
     expected: {
       complete: false,
@@ -124,7 +114,6 @@ const testCases = [
     title:
       "get /tasks/+server,client returns all tasks in server or client projects",
     route: "/tasks/+server,client",
-    method: "get",
     testedElement: 1,
     expected: {
       complete: false,
@@ -135,7 +124,6 @@ const testCases = [
     title:
       "get /tasks/+server,client/Z returns all Z-priority tasks in server or client projects",
     route: "/tasks/+server,client/Z",
-    method: "get",
     testedElement: 0,
     expected: {
       priority: "Z",
@@ -145,7 +133,6 @@ const testCases = [
   {
     title: "get /tasks/due/2020-10-20 returns tasks with due:2020-10-20",
     route: "/tasks/due/2020-10-20",
-    method: "get",
     testedElement: 0,
     expected: {
       text: "test complete task route /tasks/x due:2020-10-20",
@@ -155,7 +142,6 @@ const testCases = [
   {
     title: "get /tasks/start/2020-10-16 returns task with that start date",
     route: "/tasks/start/2020-10-16",
-    method: "get",
     testedElement: 0,
     expected: {
       text: "test incomplete task route /tasks/!x",
@@ -165,7 +151,6 @@ const testCases = [
   {
     title: "get /tasks/end/2020-10-13 returns task with that end date",
     route: "/tasks/end/2020-10-13",
-    method: "get",
     testedElement: 0,
     expected: {
       text: "test complete task route /tasks/x due:2020-10-20",
@@ -174,14 +159,49 @@ const testCases = [
   },
 ];
 
-describe("tasks router", () => {
+const testOptionsCases = [
+  {
+    title:
+      "options /tasks/1 with { complete: false } should update task status",
+    route: "/tasks/1",
+    testedElement: 0,
+    data: { complete: false },
+    expectedStatus: 200,
+    expectedResult: {
+      text: "test complete task route /tasks/x due:2020-10-20",
+      complete: false,
+    },
+  },
+  {
+    title: "options /tasks/91 returns status 404",
+    route: "/tasks/91",
+    testedElement: 0,
+    expectedStatus: 404,
+  },
+];
+
+describe("/tasks routes", () => {
   beforeAll(() => {
     process.env.NODE_ENV = "test";
   });
-  testCases.forEach((testCase) => {
+  testGetCases.forEach((testCase) => {
     test(testCase.title, async () => {
-      const res = await request(app)[testCase.method](testCase.route);
+      const res = await request(app).get(testCase.route);
       expect(res.body[testCase.testedElement]).toMatchObject(testCase.expected);
+    });
+  });
+  testOptionsCases.forEach((testCase) => {
+    test(testCase.title, async () => {
+      const res = await request(app)
+        .options(testCase.route)
+        .send(testCase.data);
+      expect(res.status).toBe(testCase.expectedStatus);
+      if (testCase.expectedResult) {
+        const validationRes = await request(app).get(testCase.route);
+        expect(validationRes.body[testCase.testedElement]).toMatchObject(
+          testCase.expectedResult
+        );
+      }
     });
   });
 });

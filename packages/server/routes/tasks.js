@@ -1,4 +1,5 @@
 const express = require("express");
+const { merge } = require("lodash");
 
 function taskFilter(tasks, query, prop) {
   return tasks.filter((t) => t[prop].some((q) => query.includes(q)));
@@ -16,14 +17,16 @@ function byPriority(tasks, prio) {
 
 function byDate(tasks, term, queryDate) {
   const typedDate = new Date(queryDate);
-  if(isNaN(typedDate.getTime())) {
-    console.error('invalid date');
-    throw new TypeError('invalid date');
+  if (isNaN(typedDate.getTime())) {
+    console.error("invalid date");
+    throw new TypeError("invalid date");
   }
   if (term === "due") {
     return tasks.filter(({ due = NaN }) => due === typedDate.getTime());
   } else if (term === "end") {
-    return tasks.filter(({ completeDate = NaN }) => completeDate === typedDate.getTime());
+    return tasks.filter(
+      ({ completeDate = NaN }) => completeDate === typedDate.getTime()
+    );
   } else if (term === "start") {
     return tasks.filter(({ date = NaN }) => date === typedDate.getTime());
   }
@@ -36,7 +39,11 @@ function taskRouter(tasks) {
 
   router.get("/:taskId(\\d+)", (req, res) => {
     const taskId = parseInt(req.params.taskId, 10);
-    res.json(tasks.filter(({ number }) => number === taskId));
+    const task = tasks.filter(({ number }) => number === taskId);
+    if (task.length > 0) {
+      return res.json(task);
+    }
+    return res.sendStatus(404);
   });
 
   router.get("/\\+:proj", (req, res) => {
@@ -87,6 +94,17 @@ function taskRouter(tasks) {
     const prio = req.params.priority;
     const status = req.params.complete;
     res.json(complete(byPriority(tasks, prio), status));
+  });
+
+  router.options("/:taskId(\\d+)", (req, res) => {
+    const update = req.body;
+    const taskId = parseInt(req.params.taskId, 10);
+    const task = tasks.filter(({ number }) => number === taskId)[0];
+    if (task) {
+      merge(task, update);
+      return res.sendStatus(200);
+    }
+    res.sendStatus(404);
   });
 
   router.get(
