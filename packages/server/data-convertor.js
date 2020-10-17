@@ -1,4 +1,4 @@
-const todotxt = require("todotxt");
+const todotxt = require("./todotxt-parser");
 
 // TODO: rewrite to fn
 function parseCustomFields(task) {

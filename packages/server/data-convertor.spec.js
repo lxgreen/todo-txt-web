@@ -35,20 +35,24 @@ test("parse custom fields", () => {
 });
 
 test("serialize data to text", () => {
-  const expected = `(A) test todo.txt serializer +todo-txt-web
-x (B) test todo.txt parser @dev`;
+  const expected = `(A) test todo.txt serializer +todo-txt-web due:2020-10-20 times:5
+x (Z) 2020-10-05 2020-08-13 test todo.txt parser @dev`;
   const actual = serialize([
     {
       complete: false,
       priority: "A",
-      text: "test todo.txt serializer +todo-txt-web",
+      text: "test todo.txt serializer +todo-txt-web due:2020-10-20 times:5",
       projects: ["todo-txt-web"],
+      due: new Date("2020-10-20").getTime(),
+      times: 5,
     },
     {
       complete: true,
       text: "test todo.txt parser @dev",
       contexts: ["dev"],
-      priority: "B",
+      priority: "Z",
+      date: new Date("2020-8-13").getTime(),
+      completeDate: new Date("2020-10-05").getTime(),
     },
   ]);
   expect(actual).toEqual(expected);
