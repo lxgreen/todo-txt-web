@@ -16,7 +16,6 @@ function byPriority(tasks, prio) {
 
 function byDate(tasks, term, queryDate) {
   const typedDate = new Date(queryDate);
-  console.log(typedDate);
   if(isNaN(typedDate.getTime())) {
     console.error('invalid date');
     throw new TypeError('invalid date');
@@ -56,7 +55,7 @@ function taskRouter(tasks) {
     res.json(complete(taskFilter(tasks, query, "projects"), status));
   });
 
-  router.get("/\\+:proj/:priority(A|B|C)", (req, res) => {
+  router.get("/\\+:proj/:priority([A-Z])", (req, res) => {
     const query = req.params.proj.split(",") || [];
     const prio = req.params.priority;
     res.json(byPriority(taskFilter(tasks, query, "projects"), prio));
@@ -68,7 +67,7 @@ function taskRouter(tasks) {
     res.json(complete(taskFilter(tasks, query, "contexts"), status));
   });
 
-  router.get("/@:context/:priority(A|B|C)", (req, res) => {
+  router.get("/@:context/:priority([A-Z])", (req, res) => {
     const query = req.params.context.split(",") || [];
     const prio = req.params.priority;
     res.json(byPriority(taskFilter(tasks, query, "contexts"), prio));
@@ -79,12 +78,12 @@ function taskRouter(tasks) {
     res.json(complete(tasks, status));
   });
 
-  router.get("/:priority(A|B|C)", (req, res) => {
+  router.get("/:priority([A-Z])", (req, res) => {
     const prio = req.params.priority;
     res.json(byPriority(tasks, prio));
   });
 
-  router.get("/:priority(A|B|C)/:complete(x|!x)", (req, res) => {
+  router.get("/:priority([A-Z])/:complete(x|!x)", (req, res) => {
     const prio = req.params.priority;
     const status = req.params.complete;
     res.json(complete(byPriority(tasks, prio), status));

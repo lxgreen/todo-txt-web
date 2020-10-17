@@ -10,4 +10,4 @@ x 2020-10-13 test @api or @e2e context complete tasks route /tasks/@api,e2e/x
 
 test +server project tasks route /tasks/+server
 test +server or +client project tasks route /tasks/+server,client
-(C) test +server or +client project C-priority tasks route /tasks/+server,client/C
+(Z) test +server or +client project Z-priority tasks route /tasks/+server,client/Z

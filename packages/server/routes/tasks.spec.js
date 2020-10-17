@@ -13,7 +13,7 @@ x 2020-10-13 test @api or @e2e context complete tasks route /tasks/@api,e2e/x
 
 test +server project tasks route /tasks/+server
 test +server or +client project tasks route /tasks/+server,client
-(C) test +server or +client project C-priority tasks route /tasks/+server,client/C
+(Z) test +server or +client project Z-priority tasks route /tasks/+server,client/Z
 */
 
 const testCases = [
@@ -34,7 +34,7 @@ const testCases = [
     expected: {
       complete: false,
       text:
-        "test +server or +client project C-priority tasks route /tasks/+server,client/C",
+        "test +server or +client project Z-priority tasks route /tasks/+server,client/Z",
     },
   },
   {
@@ -133,12 +133,12 @@ const testCases = [
   },
   {
     title:
-      "get /tasks/+server,client/C returns all C-priority tasks in server or client projects",
-    route: "/tasks/+server,client/C",
+      "get /tasks/+server,client/Z returns all Z-priority tasks in server or client projects",
+    route: "/tasks/+server,client/Z",
     method: "get",
     testedElement: 0,
     expected: {
-      priority: "C",
+      priority: "Z",
       projects: ["server", "client"],
     },
   },
@@ -160,6 +160,16 @@ const testCases = [
     expected: {
       text: "test incomplete task route /tasks/!x",
       date: new Date("2020-10-16").getTime(),
+    },
+  },
+  {
+    title: "get /tasks/end/2020-10-13 returns task with that end date",
+    route: "/tasks/end/2020-10-13",
+    method: "get",
+    testedElement: 0,
+    expected: {
+      text: "test complete task route /tasks/x due:2020-10-20",
+      completeDate: new Date("2020-10-13").getTime(),
     },
   },
 ];
